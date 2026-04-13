@@ -59,9 +59,7 @@ class FilterData
 
         $filterUser = [
             'nickname'          => $user['nickname'] ?? '',                         // 昵称
-            'avatar_168x168'    => $user['avatar_168x168']['url_list'][0] ?? '',
-            'avatar_300x300'    => $user['avatar_300x300']['url_list'][0] ?? '',
-            'avatar_larger'     => $user['avatar_larger']['url_list'][0] ?? '',
+            'avatar'            => $user['avatar_300x300']['url_list'][0] ?? '',
             'signature'         => $user['signature'] ?? '',                        // 个性签名
             'aweme_count'       => $user['aweme_count'] ?? 0,                       // 作品数
             'follower_count'    => $user['follower_count'] ?? 0,                    // 粉丝数
