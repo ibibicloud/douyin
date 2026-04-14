@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace ibibicloud\douyin;
 
 use ibibicloud\facade\FormatUnit;
@@ -8,14 +10,13 @@ use ibibicloud\facade\FormatUnit;
 class FilterData
 {
     // 我的关注列表数据
-    public function following($json) {
-        $json = json_decode($json['body'], true);
-        
+    public function myFollowingData(array $data): array
+    {
         // 从原始对象中提取必须要的字段
-        $followings = $json['followings'] ?? [];        // 我的关注 数组
-        $hasMore    = $json['has_more'] ?? false;       // 下拉还有吗？
-        $offset     = $json['offset'] ?? 0;             // 偏移量
-        $total      = $json['total'] ?? 0;              // 我的关注总数
+        $followings = $data['followings'] ?? [];        // 我的关注 数组
+        $hasMore    = $data['has_more'] ?? false;       // 下拉还有吗？
+        $offset     = $data['offset'] ?? 0;             // 偏移量
+        $total      = $data['total'] ?? 0;              // 我的关注总数
 
         $filterFollowing = [];
         foreach ( $followings as $item ) {
@@ -51,15 +52,15 @@ class FilterData
     }
 
     // UP主的相关信息
-    public function authorInfoData($json) {
-        $json = json_decode($json['body'], true);
-        
+    public function authorInfoData(array $data): array
+    {
         // 从原始对象中提取必须要的字段
-        $user = $json['user'] ?? [];
+        $user = $data['user'] ?? [];
 
         $filterUser = [
             'nickname'          => $user['nickname'] ?? '',                         // 昵称
             'avatar'            => $user['avatar_300x300']['url_list'][0] ?? '',
+            'avatar_larger'     => $user['avatar_larger']['url_list'][0] ?? '',
             'signature'         => $user['signature'] ?? '',                        // 个性签名
             'aweme_count'       => $user['aweme_count'] ?? 0,                       // 作品数
             'follower_count'    => $user['follower_count'] ?? 0,                    // 粉丝数
@@ -69,21 +70,28 @@ class FilterData
             'uid'               => $user['uid'] ?? '',                              // uid
             'unique_id'         => $user['unique_id'] ?? '',                        // uid
             'user_age'          => $user['user_age'] ?? 0,                          // 年龄
+
+            'follow_status'     => $user['follow_status'] ?? '',                    // 是否已关注 0 / 1
+            'ip_location'       => $user['ip_location'] ?? '',                      // IP归属地
+            'country'           => $user['country'] ?? '',                          // 国家
+            'province'          => $user['province'] ?? '',                         // 省份
+            'city'              => $user['city'] ?? '',                             // 城市
+            'district'          => $user['district'] ?? '',                         // 街道
+            'gender'            => $user['gender'] ?? '',                           // 性别 1=男 2=女
         ];
 
         return $filterUser;
     }
 
     // 作者的视频列表
-    public function authorVideoList($json) {
-        $json = json_decode($json['body'], true);
-
+    public function authorVideoListData(array $data): array
+    {
         // 从原始数组中提取必须要的字段
-        $awemeList  = $json['aweme_list'] ?? [];        // UP主的作品列表
-        $timeList   = $json['time_list'] ?? [];         // UP主的作品时间轴列表
-        $hasMore    = $json['has_more'] ?? 0;           // 下拉还有吗？
-        $minCursor  = $json['min_cursor'] ?? 0;         // 时间区间作品筛选 - 起始时间
-        $maxCursor  = $json['max_cursor'] ?? 0;         // 时间区间作品筛选 - 结束时间
+        $awemeList  = $data['aweme_list'] ?? [];        // UP主的作品列表
+        $timeList   = $data['time_list'] ?? [];         // UP主的作品时间轴列表
+        $hasMore    = $data['has_more'] ?? 0;           // 下拉还有吗？
+        $minCursor  = $data['min_cursor'] ?? 0;         // 时间区间作品筛选 - 起始时间
+        $maxCursor  = $data['max_cursor'] ?? 0;         // 时间区间作品筛选 - 结束时间
 
         $filterVideoList = [];
         foreach ( $awemeList as $item ) {
