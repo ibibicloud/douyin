@@ -39,7 +39,7 @@ class FilterData
                 'total_favorited_o' => $item['total_favorited'] ?? 0,
                 'short_id'          => $item['short_id'] ?? '',
                 'constellation'     => $item['constellation'] ?? '',                            // UP主的星座
-                'signature'         => $item['signature'] ?? '',                                // UP主的个人描述简介
+                'signature'         => $this->formatVideoTextAttr($item['signature'] ?? ''),    // UP主的个人描述简介
             ];
         }
 
@@ -61,7 +61,7 @@ class FilterData
             'nickname'          => $user['nickname'] ?? '',                         // 昵称
             'avatar'            => $user['avatar_300x300']['url_list'][0] ?? '',
             'avatar_larger'     => $user['avatar_larger']['url_list'][0] ?? '',
-            'signature'         => $user['signature'] ?? '',                        // 个性签名
+            'signature'         => $this->formatVideoTextAttr($user['signature']) ?? '',// 个性签名
             'aweme_count'       => $user['aweme_count'] ?? 0,                       // 作品数
             'follower_count'    => $user['follower_count'] ?? 0,                    // 粉丝数
             'following_count'   => $user['following_count'] ?? 0,                   // 他的关注别UP主的数量
@@ -160,11 +160,15 @@ class FilterData
                 }
             }
 
+            $title = empty( $this->formatVideoTextAttr($item['item_title']) ) 
+                     ? ( empty( $this->formatVideoTextAttr($item['desc']) ) ? '空标题_' . time() : $this->formatVideoTextAttr($item['desc']) )
+                     : $this->formatVideoTextAttr($item['item_title']);
+
            // 构建过滤后的视频对象
             $filterVideoList[] = [
                 'aweme_id'      => $item['aweme_id'] ?? '',
-                'title'         => $item['item_title'] ?? '',
-                'desc'          => $item['desc'] ?? '',
+                'title'         => $title,
+                'desc'          => $this->formatVideoTextAttr($item['desc']) ?? '',
                 'create_time'   => !empty($item['create_time']) ? date('Y-m-d H:i:s', $item['create_time']) : '', // 修复
                 'share_url'     => $item['share_info']['share_url'] ?? '',
                 'share_desc'    => $item['share_info']['share_link_desc'] ?? '',
@@ -190,7 +194,7 @@ class FilterData
                 ],
                 'music' => [
                     'id'            => $item['music']['id'] ?? '',
-                    'title'         => $item['music']['title'] ?? '',
+                    'title'         => $this->formatVideoTextAttr($item['music']['title']) ?? '',
                     'author'        => $item['music']['author'] ?? '',
                     'cover'         => !empty($item['music']['cover_thumb']['url_list']) ? end($item['music']['cover_thumb']['url_list']) : '', // 修复
                     'duration'      => FormatUnit::duration($item['music']['duration'] ?? 0, false),
@@ -211,5 +215,22 @@ class FilterData
             'max_cursor'    => $maxCursor
         ];
     }
+
+    // 安全格式化文件名（跨平台 Windows/Linux）
+    public function formatVideoTextAttr($text)
+    {
+        // 1. 去掉字符串**开头和结尾**的空格、换行、制表符
+        $name = trim($text);
+
+        // 2. 把多个连续空格，变成一个空格（支持中文 UTF-8）
+        $name = preg_replace('#\s+#u', ' ', $name);
+
+        // 3. 删掉系统不允许的非法字符
+        $name = preg_replace('#[\\/:*?"<>|]#u', '', $name);
+
+        // 返回干净、合法的文件名
+        return $name;
+    }
+
 
 }
