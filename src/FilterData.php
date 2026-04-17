@@ -51,6 +51,35 @@ class FilterData
         ];
     }
 
+    // 我的收藏-音乐
+    public function myAudioCollectionData(array $data): array
+    {
+        // 从原始对象中提取必须要的字段
+        $collection = $data['mc_list'] ?? [];           // 我的收藏-音乐 数组
+        $hasMore    = $data['has_more'] ?? false;       // 下拉还有吗？
+        $cursor     = $data['cursor'] ?? 0;             // 偏移量
+
+        $filterCollection = [];
+        foreach ( $collection as $item ) {
+            $filterCollection[] = [
+                'id'            => (string)$item['id'] ?? '',                   // 音频 ID
+                'title'         => $item['title'] ?? '',                        // 音频标题
+                'cover'         => $item['cover_thumb'] ?? '',                  // 音频封皮
+                'duration'      => $item['duration'] ?? '',                     // 音频时长
+                'play_url'      => $item['play_url']['url_list'][0] ?? '',      // 音频播放地址
+                'author'        => $item['author'] ?? '',                       // 音频作者
+                'sec_user_id'   => $item['sec_uid'] ?? '',                      // sec_user_id
+                'avatar'        => $item['avatar_thumb']['url_list'][0] ?? '',  // 作者头像
+            ];
+        }
+
+        return [
+            'collection' => $filterCollection,
+            'has_more'   => $hasMore,
+            'cursor'     => $cursor,
+        ];
+    }
+
     // UP主的相关信息
     public function authorInfoData(array $data): array
     {
@@ -217,20 +246,17 @@ class FilterData
     }
 
     // 安全格式化文件名（跨平台 Windows/Linux）
-    public function formatVideoTextAttr($text)
+    public function formatVideoTextAttr(?string $text): string
     {
         // 1. 去掉字符串**开头和结尾**的空格、换行、制表符
         $name = trim($text);
-
         // 2. 把多个连续空格，变成一个空格（支持中文 UTF-8）
         $name = preg_replace('#\s+#u', ' ', $name);
-
         // 3. 删掉系统不允许的非法字符
         $name = preg_replace('#[\\/:*?"<>|]#u', '', $name);
 
         // 返回干净、合法的文件名
         return $name;
     }
-
 
 }

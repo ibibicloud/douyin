@@ -58,6 +58,24 @@ class Analysis
 	    return $raw ? $res : FilterData::myFollowingData($res);
 	}
 
+	// 获取我的抖音收藏数据-音乐
+	public function getMyAudioCollectionData(string $cursor = '0', bool $raw = true): array
+	{
+		$config = $this->getConfig();
+		$bizParams = $config['bizParams'];
+		$params = [
+			'device_platform'	=> $bizParams['device_platform'],
+	        'channel'			=> $bizParams['channel'],
+	        'aid'				=> $bizParams['aid'],
+			'cursor'			=> $cursor,
+			'count'				=> 20,
+		];
+		$response = HttpClient::get($config['api']['audio_collection'], $params, $this->parseCurlBash2Headers());
+		$res = json_decode($response['body'], true);
+
+		return $raw ? $res : FilterData::myAudioCollectionData($res);
+	}
+
 	// 获取UP主的相关信息
 	public function getAuthorInfoData(string $sec_user_id, bool $raw = true): array
 	{
@@ -95,6 +113,46 @@ class Analysis
 	    $res = json_decode($response['body'], true);
 
 	    return $raw ? $res : FilterData::authorVideoListData($res);
+	}
+
+	// 获取抖音创作中心音频数据
+	public function getCreatorAudioData(string $type, int $cursor = 0, $count = 20): array
+	{
+		$config = $this->getConfig();
+		$bizParams = $config['bizParams'];
+
+		$typeData = [
+			'推荐'	=> ['type' => 'recommend', 'category_id' => '1'],
+			'热门榜'	=> ['type' => 'rank', 'category_id' => '7088298745502646280'],
+			// '收藏'	=> ['type' => 'fav', 'category_id' => '1'],
+			'飙升榜'	=> ['type' => 'rank', 'category_id' => '7088297994563059748'],
+			'原创榜'	=> ['type' => 'rank', 'category_id' => '6854399861215747336'],
+			'卡点'	=> ['type' => 'category', 'category_id' => '7395823327471782694'],
+			'纯音乐'	=> ['type' => 'category', 'category_id' => '7397340776264420134'],
+			'旅行'	=> ['type' => 'category', 'category_id' => '7397321654973549338'],
+			'DJ'	=> ['type' => 'category', 'category_id' => '7395861511152864050'],
+			'搞笑'	=> ['type' => 'category', 'category_id' => '7397653031963167526'],
+			'流行'	=> ['type' => 'category', 'category_id' => '7397326893978405683'],
+			'伤感'	=> ['type' => 'category', 'category_id' => '7397328346998213386'],
+		];
+
+		$queryData = [
+			'type'			=> $typeData[$type]['type'],
+			'category_id'	=> $typeData[$type]['category_id'],
+			'cursor'		=> $cursor,
+			'count'			=> $count,
+		];
+
+		$params = [
+	        'device_platform'	=> $bizParams['device_platform'],
+	        'channel'			=> $bizParams['channel'],
+	        'aid'				=> $bizParams['aid'],
+	    ];
+
+		$response = HttpClient::get($config['api']['creator_audio'] . '?' . http_build_query($queryData), $params, $this->parseCurlBash2Headers());
+		$res = json_decode($response['body'], true);
+
+		return $res ?? [];
 	}
 
 }
