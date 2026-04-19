@@ -28,7 +28,8 @@ class FilterData
                 'unique_id'         => $item['unique_id'] ?? '',                                // UP主的抖音号
                 'uid'               => $item['uid'] ?? '',
                 'language'          => $item['language'] ?? '',
-                'aweme_count'       => $item['aweme_count'] ?? 0,                               // UP主的作品数量
+                'aweme_count'       => FormatUnit::number2CN($item['aweme_count'] ?? 0),        // UP主的作品数量
+                'aweme_count_o'     => $item['aweme_count'] ?? 0,
                 'create_time'       => date('Y-m-d', $item['create_time']),                     // UP主的账号注册时间
                 'favoriting_count'  => $item['favoriting_count'] ?? 0,
                 'follower_count'    => FormatUnit::number2CN($item['follower_count'] ?? 0),     // UP主的粉丝数
@@ -87,26 +88,29 @@ class FilterData
         $user = $data['user'] ?? [];
 
         $filterUser = [
-            'nickname'          => $user['nickname'] ?? '',                         // 昵称
+            'nickname'          => $user['nickname'] ?? '',                                     // 昵称
             'avatar'            => $user['avatar_300x300']['url_list'][0] ?? '',
             'avatar_larger'     => $user['avatar_larger']['url_list'][0] ?? '',
-            'signature'         => $this->formatVideoTextAttr($user['signature']) ?? '',// 个性签名
-            'aweme_count'       => $user['aweme_count'] ?? 0,                       // 作品数
-            'follower_count'    => $user['follower_count'] ?? 0,                    // 粉丝数
-            'following_count'   => $user['following_count'] ?? 0,                   // 他的关注别UP主的数量
-            'total_favorited'   => $user['total_favorited'] ?? 0,                   // 总获赞数
-            'sec_user_id'       => $user['sec_uid'] ?? '',                          // sec_user_id
-            'uid'               => $user['uid'] ?? '',                              // uid
-            'unique_id'         => $user['unique_id'] ?? '',                        // uid
-            'user_age'          => $user['user_age'] ?? 0,                          // 年龄
+            'signature'         => $this->formatVideoTextAttr($user['signature']) ?? '',        // 个性签名
+            'aweme_count'       => FormatUnit::number2CN($user['aweme_count'] ?? 0),            // 作品数
+            'aweme_count_o'     => $user['aweme_count'] ?? 0,
+            'follower_count'    => FormatUnit::number2CN($user['follower_count'] ?? 0),         // 粉丝数
+            'follower_count_o'  => $user['follower_count'] ?? 0,
+            'following_count'   => $user['following_count'] ?? 0,                               // 他的关注别UP主的数量
+            'total_favorited'   => FormatUnit::number2CN($user['total_favorited'] ?? 0),        // 总获赞数
+            'total_favorited_o' => $user['total_favorited'] ?? 0,
+            'sec_user_id'       => $user['sec_uid'] ?? '',                                      // sec_user_id
+            'uid'               => $user['uid'] ?? '',                                          // uid
+            'unique_id'         => $user['unique_id'] ?? '',                                    // uid
+            'user_age'          => $user['user_age'] ?? 0,                                      // 年龄
 
-            'follow_status'     => $user['follow_status'] ?? '',                    // 是否已关注 0 / 1
-            'ip_location'       => $user['ip_location'] ?? '',                      // IP归属地
-            'country'           => $user['country'] ?? '',                          // 国家
-            'province'          => $user['province'] ?? '',                         // 省份
-            'city'              => $user['city'] ?? '',                             // 城市
-            'district'          => $user['district'] ?? '',                         // 街道
-            'gender'            => $user['gender'] ?? '',                           // 性别 1=男 2=女
+            'follow_status'     => $user['follow_status'] ?? '',                                // 是否已关注 0 / 1
+            'ip_location'       => $user['ip_location'] ?? '',                                  // IP归属地
+            'country'           => $user['country'] ?? '',                                      // 国家
+            'province'          => $user['province'] ?? '',                                     // 省份
+            'city'              => $user['city'] ?? '',                                         // 城市
+            'district'          => $user['district'] ?? '',                                     // 街道
+            'gender'            => $user['gender'] ?? '',                                       // 性别 1=男 2=女
         ];
 
         return $filterUser;
